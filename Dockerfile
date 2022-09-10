@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 ARG PHP_VERSION
+# renovate: datasource=github-releases depName=maxmind/libmaxminddb
 ARG LIBMAXMINDDB_VERSION=1.6.0
 
 FROM bitnami/minideb:bullseye as libmaxminddb_build
@@ -84,22 +85,29 @@ RUN cp /bitnami/blacksmith-sandbox/imap-2007.0.0/LICENSE /opt/bitnami/licenses/i
 ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
+# renovate: datasource=github-releases depName=composer/composer
 ARG COMPOSER_VERSION=2.4.1
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php composer-setup.php --install-dir=/opt/bitnami/php/bin --filename=composer --version=$COMPOSER_VERSION && \
-    ln -sv /opt/bitnami/php/bin/composer /opt/bitnami/php/bin/composer.phar
+    php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
+    ln -sv /opt/bitnami/php/bin/composer.phar /opt/bitnami/php/bin/composer
 
 COPY --link --from=libmaxminddb_build /opt/bitnami /opt/bitnami
 COPY --link rootfs/ /
 
 RUN install_packages file
 
+# renovate: datasource=github-releases depName=php-memcached-dev/php-memcached
 ARG MEMCACHED_VERSION=3.2.0
+# renovate: datasource=github-releases depName=krakjoe/apcu extractVersion=^v(?<version>.*)$
 ARG APCU_VERSION=5.1.21
+# renovate: datasource=github-releases depName=Imagick/imagick
 ARG IMAGICK_VERSION=3.7.0
+# renovate: datasource=github-releases depName=mongodb/mongo-php-driver
 ARG MONGODB_VERSION=1.14.0
+# renovate: datasource=github-releases depName=xdebug/xdebug
 ARG XDEBUG_VERSION=3.1.5
+# renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
 ARG MAXMIND_READER_VERSION=1.11.0
 
 RUN pecl install apcu-$APCU_VERSION
