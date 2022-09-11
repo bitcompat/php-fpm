@@ -65,6 +65,7 @@ jobs:
             ${{ matrix.php_version.latest && 'latest' || '' }}
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye-r1
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye
+            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}-bullseye
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}
             type=sha
