@@ -13,9 +13,10 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - { major: 8, minor: 1, patch: 10, latest: true }
-          - { major: 8, minor: 0, patch: 23, latest: false }
-          - { major: 7, minor: 4, patch: 30, latest: false }
+          - { major: 8, minor: 2, patch: 0RC2, latest: false, xdebug: 3.2.0alpha3, revision: 1 }
+          - { major: 8, minor: 1, patch: 10, latest: true, xdebug: 3.1.5, revision: 2 }
+          - { major: 8, minor: 0, patch: 23, latest: false, xdebug: 3.1.5, revision: 2 }
+          - { major: 7, minor: 4, patch: 30, latest: false, xdebug: 3.1.5, revision: 2 }
 
     permissions:
       contents: read
@@ -63,7 +64,7 @@ jobs:
             public.ecr.aws/bitcompat/${{ github.event.repository.name }}
           tags: |
             ${{ matrix.php_version.latest && 'latest' || '' }}
-            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye-r1
+            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye-r${{ matrix.php_version.revision }}
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}
             ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}-bullseye
@@ -77,6 +78,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           build-args: |
             PHP_VERSION=${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}
+            XDEBUG_VERSION=${{ matrix.php_version.xdebug }}
           push: true
           context: .
           tags: ${{ steps.docker_meta.outputs.tags }}

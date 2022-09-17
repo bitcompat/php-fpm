@@ -3,6 +3,8 @@
 ARG PHP_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
 ARG LIBMAXMINDDB_VERSION=1.6.0
+# renovate: datasource=github-releases depName=xdebug/xdebug
+ARG XDEBUG_VERSION=3.1.5
 
 FROM bitnami/minideb:bullseye as libmaxminddb_build
 
@@ -61,14 +63,15 @@ RUN install_packages pkg-config build-essential autoconf bison re2c \
       zlib1g-dev libbz2-dev libcurl4-openssl-dev libpng-dev libwebp-dev libsqlite3-dev \
       libjpeg-dev libfreetype6-dev libgmp-dev libpam0g-dev libicu-dev libldap2-dev libonig-dev freetds-dev \
       unzip libreadline-dev libsodium-dev libtidy-dev libxslt1-dev libzip-dev libmemcached-dev libmagickwand-dev \
-      libmongo-client-dev libpq-dev libkrb5-dev
+      libmongo-client-dev libpq-dev libkrb5-dev file
 
 ENV EXTENSION_DIR=/opt/bitnami/php/lib/php/extensions
 
-ADD --link https://www.php.net/distributions/php-${PHP_VERSION}.tar.gz php.tar.gz
+ADD --link https://github.com/php/php-src/archive/refs/tags/php-${PHP_VERSION}.tar.gz php.tar.gz
 RUN <<EOT bash
     set -e
     tar xf php.tar.gz
+    mv php-src-php-${PHP_VERSION} php-${PHP_VERSION}
     cd php-${PHP_VERSION}
     ./buildconf -f
 
@@ -95,8 +98,6 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &&
 COPY --link --from=libmaxminddb_build /opt/bitnami /opt/bitnami
 COPY --link rootfs/ /
 
-RUN install_packages file
-
 # renovate: datasource=github-releases depName=php-memcached-dev/php-memcached
 ARG MEMCACHED_VERSION=3.2.0
 # renovate: datasource=github-releases depName=krakjoe/apcu extractVersion=^v(?<version>.*)$
@@ -105,8 +106,7 @@ ARG APCU_VERSION=5.1.21
 ARG IMAGICK_VERSION=3.7.0
 # renovate: datasource=github-releases depName=mongodb/mongo-php-driver
 ARG MONGODB_VERSION=1.14.0
-# renovate: datasource=github-releases depName=xdebug/xdebug
-ARG XDEBUG_VERSION=3.1.5
+ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
 ARG MAXMIND_READER_VERSION=1.11.0
 
