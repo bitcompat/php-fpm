@@ -177,6 +177,8 @@ RUN <<EOT bash
     rm /var/cache/ldconfig/aux-cache
 
     mkdir -p /app
+    mkdir -p /tmp
+    chmod 1777 /tmp
     sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/' /etc/login.defs
     sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS    0/' /etc/login.defs
     sed -i 's/sha512/sha512 minlen=8/' /etc/pam.d/common-password

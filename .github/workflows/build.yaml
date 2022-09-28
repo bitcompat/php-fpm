@@ -13,10 +13,10 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - { major: 8, minor: 2, patch: 0RC2, latest: false, xdebug: 3.2.0alpha3, revision: 1 }
-          - { major: 8, minor: 1, patch: 10, latest: true, xdebug: 3.1.5, revision: 2 }
-          - { major: 8, minor: 0, patch: 23, latest: false, xdebug: 3.1.5, revision: 2 }
-          - { major: 7, minor: 4, patch: 30, latest: false, xdebug: 3.1.5, revision: 2 }
+          - { major: 8, minor: 2, patch: 0RC2, latest: false, xdebug: 3.2.0alpha3, revision: 2 }
+          - { major: 8, minor: 1, patch: 10, latest: true, xdebug: 3.1.5, revision: 3 }
+          - { major: 8, minor: 0, patch: 23, latest: false, xdebug: 3.1.5, revision: 3 }
+          - { major: 7, minor: 4, patch: 30, latest: false, xdebug: 3.1.5, revision: 3 }
 
     permissions:
       contents: read
