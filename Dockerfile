@@ -177,6 +177,7 @@ RUN <<EOT bash
     rm /var/cache/ldconfig/aux-cache
 
     mkdir -p /app
+    mkdir -p /var/log/apt
     mkdir -p /tmp
     chmod 1777 /tmp
     sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/' /etc/login.defs
