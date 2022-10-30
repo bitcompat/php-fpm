@@ -13,10 +13,10 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - { major: 8, minor: 2, patch: 0RC3, latest: false, xdebug: 3.2.0alpha3, revision: 1 }
-          - { major: 8, minor: 1, patch: 11, latest: true, xdebug: 3.1.5, revision: 1 }
-          - { major: 8, minor: 0, patch: 24, latest: false, xdebug: 3.1.5, revision: 1 }
-          - { major: 7, minor: 4, patch: 32, latest: false, xdebug: 3.1.5, revision: 1 }
+          - { major: 8, minor: 2, patch: 0RC5, latest: false, xdebug: 3.2.0RC1, revision: 1 }
+          - { major: 8, minor: 1, patch: 12, latest: true, xdebug: 3.1.5, revision: 1 }
+          - { major: 8, minor: 0, patch: 25, latest: false, xdebug: 3.1.5, revision: 1 }
+          - { major: 7, minor: 4, patch: 32, latest: false, xdebug: 3.1.5, revision: 2 }
 
     permissions:
       contents: read
@@ -57,7 +57,7 @@ jobs:
 
       - id: docker_meta
         name: Extract docker image metadata
-        uses: docker/metadata-action@v4.0.1
+        uses: docker/metadata-action@v4.1.1
         with:
           images: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
