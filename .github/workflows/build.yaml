@@ -13,10 +13,9 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - { major: 8, minor: 2, patch: 1, latest: true, xdebug: 3.2.0, revision: 1 }
-          - { major: 8, minor: 1, patch: 14, latest: false, xdebug: 3.2.0, revision: 1 }
-          - { major: 8, minor: 0, patch: 27, latest: false, xdebug: 3.2.0, revision: 1 }
-          - { major: 7, minor: 4, patch: 33, latest: false, xdebug: 3.1.5, revision: 4 }
+          - { major: 8, minor: 2, patch: 2, latest: true, xdebug: 3.2.0, revision: 1 }
+          - { major: 8, minor: 1, patch: 15, latest: false, xdebug: 3.2.0, revision: 1 }
+          - { major: 8, minor: 0, patch: 27, latest: false, xdebug: 3.2.0, revision: 2 }
 
     permissions:
       contents: read
@@ -35,6 +34,9 @@ jobs:
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          driver-opts: |
+            image=moby/buildkit:v0.10.6
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
