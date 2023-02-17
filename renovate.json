@@ -9,7 +9,7 @@
         "^Dockerfile$"
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>.+?)(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.+?))?\\nARG.+?=\\s['\"]?(?<currentValue>.+?)['\"]?\\n"
+        "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>.+?)(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.+?))?\\nARG.+?=\\s*['\"]?(?<currentValue>.+?)['\"]?\\n"
       ],
       "versioningTemplate": "{{#if versioning}}{{versioning}}{{else}}semver{{/if}}",
       "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{/if}}"
