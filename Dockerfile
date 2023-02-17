@@ -4,7 +4,7 @@ ARG PHP_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
 ARG LIBMAXMINDDB_VERSION=1.7.1
 # renovate: datasource=github-tags depName=xdebug/xdebug
-ARG XDEBUG_VERSION=3.1.5
+ARG XDEBUG_VERSION=3.2.0
 
 FROM bitnami/minideb:bullseye as libmaxminddb_build
 
