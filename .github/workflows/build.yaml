@@ -13,9 +13,9 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - { major: 8, minor: 2, patch: 3, latest: true, xdebug: 3.2.0, revision: 1 }
-          - { major: 8, minor: 1, patch: 16, latest: false, xdebug: 3.2.0, revision: 1 }
-          - { major: 8, minor: 0, patch: 28, latest: false, xdebug: 3.2.0, revision: 1 }
+          - { major: 8, minor: 2, patch: 3, latest: true, xdebug: 3.2.0, revision: 2 }
+          - { major: 8, minor: 1, patch: 16, latest: false, xdebug: 3.2.0, revision: 2 }
+          - { major: 8, minor: 0, patch: 28, latest: false, xdebug: 3.2.0, revision: 2 }
 
     permissions:
       contents: read
