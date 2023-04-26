@@ -13,9 +13,18 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - { major: 8, minor: 2, patch: 3, latest: true, xdebug: 3.2.0, revision: 2 }
-          - { major: 8, minor: 1, patch: 16, latest: false, xdebug: 3.2.0, revision: 2 }
-          - { major: 8, minor: 0, patch: 28, latest: false, xdebug: 3.2.0, revision: 2 }
+          - version: 8.2.3 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)
+            latest: true
+            xdebug: 3.2.0 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 3
+          - version: 8.1.16 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)
+            latest: false
+            xdebug: 3.2.0 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 3
+          - version: 8.0.28 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)
+            latest: false
+            xdebug: 3.2.0 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 3
 
     permissions:
       contents: read
@@ -26,6 +35,25 @@ jobs:
       - uses: actions/checkout@master
         with:
           fetch-depth: 1
+
+      - uses: actions/github-script@v6
+        id: version-tags
+        env:
+          VERSION: '${{ matrix.php_version.version }}'
+          REVISION: '${{ matrix.php_version.revision }}'
+        with:
+          result-encoding: string
+          script: |
+            const { REVISION: revision, VERSION: version } = process.env;
+            const [ major, minor, patch ] = version.split('.').filter(V => '' !== V);
+            
+            return `
+            ${major}.${minor}.${patch}-bullseye-r${revision}
+            ${major}.${minor}.${patch}-bullseye
+            ${major}.${minor}.${patch}
+            ${major}.${minor}-bullseye
+            ${major}.${minor}
+            `;
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@main
@@ -66,11 +94,7 @@ jobs:
             public.ecr.aws/bitcompat/${{ github.event.repository.name }}
           tags: |
             ${{ matrix.php_version.latest && 'latest' || '' }}
-            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye-r${{ matrix.php_version.revision }}
-            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}-bullseye
-            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}.${{ matrix.php_version.patch }}
-            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}-bullseye
-            ${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}
+            ${{ steps.version-tags.outputs.result }}
             type=sha
             type=sha,format=long
 
@@ -90,7 +114,7 @@ jobs:
 
       - name: Sign image with a key
         run: |
-          cosign sign --key env://COSIGN_PRIVATE_KEY ${TAGS}
+          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${TAGS}
         env:
           TAGS: ${{ steps.docker_meta.outputs.tags }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}

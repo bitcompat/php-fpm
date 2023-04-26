@@ -11,7 +11,17 @@
       "matchStrings": [
         "# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>.+?)(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.+?))?\\nARG.+?=\\s*['\"]?(?<currentValue>.+?)['\"]?\\n"
       ],
-      "versioningTemplate": "{{#if versioning}}{{versioning}}{{else}}semver{{/if}}",
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
+      "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{/if}}"
+    },
+    {
+      "fileMatch": [
+        "^\\.github/workflows/.+\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "['\"]?(?<currentValue>[\\d.]+?.+?)['\"]?\\s*# renovate: datasource=(?<datasource>[a-z-]+?) depName=(?<depName>.+?)(?: versioning=(?<versioning>[^\\s]+?))?(?: extractVersion=(?<extractVersion>.+?))?\\n"
+      ],
+      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}",
       "extractVersionTemplate": "{{#if extractVersion}}{{{extractVersion}}}{{/if}}"
     }
   ],
@@ -20,6 +30,13 @@
       "description": "Require dashboard approval for major updates",
       "matchUpdateTypes": ["major"],
       "dependencyDashboardApproval": true
+    },
+    {
+      "matchPackageNames": [
+        "php/php-src"
+      ],
+      "major": false,
+      "minor": false
     },
     {
       "matchDatasources": ["docker"],
