@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - version: 8.2.10 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.2.11 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.2.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 3
