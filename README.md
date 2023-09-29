@@ -16,9 +16,9 @@ $ docker run -it --name phpfpm -v /path/to/app:/app ghcr.io/bitcompat/php-fpm
 
 ## Supported tags
 
-* `8.2`, `8.2-bullseye`, `8.2.10`, `8.1.10-bullseye`, `8.1.10-bullseye-r3`, `latest`
-* `8.1`, `8.1-bullseye`, `8.1.23`, `8.1.23-bullseye`, `8.1.23-bullseye-r1`
-* `8.0`, `8.0-bullseye`, `8.0.30`, `8.0.30-bullseye`, `8.0.30-bullseye-r1` 
+* `8.2`, `8.2-bullseye`, `8.2.11`, `8.1.11-bullseye`, `8.1.11-bullseye-r1`, `latest`
+* `8.1`, `8.1-bullseye`, `8.1.24`, `8.1.24-bullseye`, `8.1.24-bullseye-r1`
+* `8.0`, `8.0-bullseye`, `8.0.30`, `8.0.30-bullseye`, `8.0.30-bullseye-r6` 
 
 ## Get this image
 
