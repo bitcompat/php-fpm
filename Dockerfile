@@ -89,7 +89,7 @@ ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
 # renovate: datasource=github-releases depName=composer/composer
-ARG COMPOSER_VERSION=2.6.4
+ARG COMPOSER_VERSION=2.6.5
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
