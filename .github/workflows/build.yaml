@@ -21,10 +21,6 @@ jobs:
             latest: false
             xdebug: 3.2.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
-          - version: 8.0.30 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
-            latest: false
-            xdebug: 3.2.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
 
     permissions:
       contents: read
@@ -73,7 +69,7 @@ jobs:
           aws-region: us-east-1
 
       - name: Login to Amazon ECR Public
-        id: login-ecr-public
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-type: public

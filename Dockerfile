@@ -58,7 +58,7 @@ WORKDIR /bitnami/blacksmith-sandbox
 COPY --link --from=imap_build /bitnami/blacksmith-sandbox/imap-2007.0.0 /bitnami/blacksmith-sandbox/imap-2007.0.0
 RUN install_packages gnupg && \
     (curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null) && \
-    echo "deb http://apt.postgresql.org/pub/repos/apt bullseye-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+    echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN install_packages pkg-config build-essential autoconf bison re2c \
       zlib1g-dev libbz2-dev libcurl4-openssl-dev libpng-dev libwebp-dev libsqlite3-dev \
       libjpeg-dev libfreetype6-dev libgmp-dev libpam0g-dev libicu-dev libldap2-dev libonig-dev freetds-dev \
