@@ -6,7 +6,7 @@ ARG LIBMAXMINDDB_VERSION=1.7.1
 # renovate: datasource=github-tags depName=xdebug/xdebug
 ARG XDEBUG_VERSION=3.2.2
 
-FROM bitnami/minideb:bullseye as libmaxminddb_build
+FROM bitnami/minideb:bookworm as libmaxminddb_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG LIBMAXMINDDB_VERSION
@@ -28,7 +28,7 @@ RUN rm -rf /opt/bitnami/common/lib/libmaxminddb.a /opt/bitnami/common/lib/libmax
 RUN mkdir -p /opt/bitnami/licenses && \
     cp libmaxminddb-${LIBMAXMINDDB_VERSION}/LICENSE /opt/bitnami/licenses/libmaxminddb-${LIBMAXMINDDB_VERSION}.txt
 
-FROM bitnami/minideb:bullseye as imap_build
+FROM bitnami/minideb:bookworm as imap_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/blacksmith-sandbox
@@ -44,7 +44,7 @@ RUN cd imap-2007.0.0 && \
     touch ip6 && \
     make ldb IP=6 SSLTYPE=unix.nopwd EXTRACFLAGS=-fPIC
 
-FROM bitnami/minideb:bullseye as php_build
+FROM bitnami/minideb:bookworm as php_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG PHP_VERSION
@@ -89,7 +89,7 @@ ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
 # renovate: datasource=github-releases depName=composer/composer
-ARG COMPOSER_VERSION=2.6.4
+ARG COMPOSER_VERSION=2.6.5
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
@@ -150,7 +150,7 @@ RUN <<EOT bash
     done
 EOT
 
-FROM bitnami/minideb:bullseye as stage-0
+FROM bitnami/minideb:bookworm as stage-0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DIRS_TO_TRIM="/usr/share/man \
@@ -163,12 +163,12 @@ ARG DIRS_TO_TRIM="/usr/share/man \
 
 RUN <<EOT bash
     set -e
-    install_packages ca-certificates curl gzip git libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4 libcurl3-gnutls libexpat1 libffi7 libfftw3-double3  \
+    install_packages ca-certificates curl gzip git libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4 libcurl3-gnutls libexpat1 libffi8 libfftw3-double3  \
         libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2  \
-        libhogweed6 libicu67 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.4-2  \
+        libhogweed6 libicu72 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.5-0  \
         liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libmemcached11 libncurses6 perl  \
         libnettle8 libnghttp2-14 libonig5 libp11-kit0 libpcre3 libpng16-16 libpq5 libpsl5 libreadline8 librtmp1 libsasl2-2  \
-        libsodium23 libssh2-1 libssl1.1 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6  \
+        libsodium23 libssh2-1 libssl3 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6  \
         libxau6 libxcb1 libxdmcp6 libxext6 libxslt1.1 libzip4 procps tar zlib1g libgdbm6 sqlite3
 
     for DIR in $DIRS_TO_TRIM; do

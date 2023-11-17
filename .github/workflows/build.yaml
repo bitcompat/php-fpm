@@ -13,18 +13,18 @@ jobs:
     strategy:
       matrix:
         php_version:
-          - version: 8.2.11 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.2.12 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.2.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
-          - version: 8.1.24 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.1.25 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.2.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
           - version: 8.0.30 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.2.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 6
+            revision: 1
 
     permissions:
       contents: read
@@ -48,10 +48,10 @@ jobs:
             const [ major, minor, patch ] = version.split('.').filter(V => '' !== V);
             
             return `
-            ${major}.${minor}.${patch}-bullseye-r${revision}
-            ${major}.${minor}.${patch}-bullseye
+            ${major}.${minor}.${patch}-bookworm-r${revision}
+            ${major}.${minor}.${patch}-bookworm
             ${major}.${minor}.${patch}
-            ${major}.${minor}-bullseye
+            ${major}.${minor}-bookworm
             ${major}.${minor}
             `;
 
