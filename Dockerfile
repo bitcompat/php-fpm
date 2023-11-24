@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.4
+# syntax=docker/dockerfile:1.6
 
 ARG PHP_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
@@ -105,7 +105,7 @@ ARG APCU_VERSION=5.1.23
 # renovate: datasource=github-releases depName=Imagick/imagick
 ARG IMAGICK_VERSION=3.7.0
 # renovate: datasource=github-releases depName=mongodb/mongo-php-driver
-ARG MONGODB_VERSION=1.16.2
+ARG MONGODB_VERSION=1.17.0
 ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
 ARG MAXMIND_READER_VERSION=1.11.0
