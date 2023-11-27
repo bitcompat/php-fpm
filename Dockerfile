@@ -4,7 +4,7 @@ ARG PHP_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
 ARG LIBMAXMINDDB_VERSION=1.8.0
 # renovate: datasource=github-tags depName=xdebug/xdebug
-ARG XDEBUG_VERSION=3.2.2
+ARG XDEBUG_VERSION=3.3.0alpha3
 
 FROM bitnami/minideb:bookworm as libmaxminddb_build
 
@@ -62,7 +62,7 @@ RUN install_packages gnupg && \
 RUN install_packages pkg-config build-essential autoconf bison re2c \
       zlib1g-dev libbz2-dev libcurl4-openssl-dev libpng-dev libwebp-dev libsqlite3-dev \
       libjpeg-dev libfreetype6-dev libgmp-dev libpam0g-dev libicu-dev libldap2-dev libonig-dev freetds-dev \
-      unzip libreadline-dev libsodium-dev libtidy-dev libxslt1-dev libzip-dev libmemcached-dev libmagickwand-dev \
+      unzip libreadline-dev libsodium-dev libtidy-dev libxslt1-dev libzip-dev libmagickwand-dev \
       libmongo-client-dev libpq-dev libkrb5-dev file
 
 ENV EXTENSION_DIR=/opt/bitnami/php/lib/php/extensions
@@ -111,8 +111,41 @@ ARG XDEBUG_VERSION
 ARG MAXMIND_READER_VERSION=1.11.0
 
 RUN pecl install apcu-$APCU_VERSION
-RUN pecl install imagick-$IMAGICK_VERSION
-RUN pecl install memcached-$MEMCACHED_VERSION
+RUN <<EOT
+  set -eux
+  curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/641.patch > 0001-unterminated-preprocessor-conditions.patch
+  git clone -b $IMAGICK_VERSION https://github.com/Imagick/imagick
+  cd imagick
+  git apply ../0001-unterminated-preprocessor-conditions.patch
+  phpize && ./configure
+  make -j$(nproc)
+  make install
+  cd ..
+  rm -rf imagick 0001-unterminated-preprocessor-conditions.patch
+EOT
+RUN <<EOT
+  set -eux
+
+  git clone https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached.git
+  cd aws-elasticache-cluster-client-libmemcached
+  touch configure.ac aclocal.m4 configure Makefile.am Makefile.in
+  mkdir BUILD
+  cd BUILD
+  ../configure --with-pic --disable-sasl
+  make -j$(nproc) && make install
+  cd ../..
+  rm -rf aws-elasticache-cluster-client-libmemcached
+
+  git clone  https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php.git
+  cd aws-elasticache-cluster-client-memcached-for-php
+  phpize
+  mkdir BUILD
+  cd BUILD
+  ../configure --disable-memcached-sasl
+  make -j$(nproc) && make install
+  cd ../..
+  rm -rf aws-elasticache-cluster-client-memcached-for-php
+EOT
 RUN PKG_CONFIG_PATH=/opt/bitnami/common/lib/pkgconfig:\$PKG_CONFIG_PATH pecl install maxminddb-$MAXMIND_READER_VERSION
 RUN pecl install mongodb-$MONGODB_VERSION
 RUN pecl install xdebug-$XDEBUG_VERSION
@@ -166,7 +199,7 @@ RUN <<EOT bash
     install_packages ca-certificates curl gzip git libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4 libcurl3-gnutls libexpat1 libffi8 libfftw3-double3  \
         libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2  \
         libhogweed6 libicu72 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.5-0  \
-        liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libmemcached11 libncurses6 perl  \
+        liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libncurses6 perl  \
         libnettle8 libnghttp2-14 libonig5 libp11-kit0 libpcre3 libpng16-16 libpq5 libpsl5 libreadline8 librtmp1 libsasl2-2  \
         libsodium23 libssh2-1 libssl3 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6  \
         libxau6 libxcb1 libxdmcp6 libxext6 libxslt1.1 libzip4 procps tar zlib1g libgdbm6 sqlite3
@@ -188,6 +221,8 @@ RUN <<EOT bash
 EOT
 
 COPY --from=php_build /opt/bitnami /opt/bitnami
+COPY --from=php_build /usr/local/lib/libhashkit*.so* /usr/local/lib/
+COPY --from=php_build /usr/local/lib/libmemcached*.so* /usr/local/lib/
 
 ARG PHP_VERSION
 ARG TARGETARCH
