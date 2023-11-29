@@ -110,8 +110,6 @@ jobs:
           context: .
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
-          cache-from: type=gha,scope=php-${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}
-          cache-to: type=gha,mode=max,scope=php-${{ matrix.php_version.major }}.${{ matrix.php_version.minor }}
 
       - name: Setup CRANE
         uses: imjasonh/setup-crane@v0.3
