@@ -108,7 +108,7 @@ ARG IMAGICK_VERSION=3.7.0
 ARG MONGODB_VERSION=1.17.0
 ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
-ARG MAXMIND_READER_VERSION=1.11.0
+ARG MAXMIND_READER_VERSION=1.11.1
 
 RUN pecl install apcu-$APCU_VERSION
 RUN <<EOT
