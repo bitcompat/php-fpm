@@ -14,12 +14,6 @@ Trademarks: The respective trademarks mentioned in this document are owned by th
 $ docker run -it --name phpfpm -v /path/to/app:/app ghcr.io/bitcompat/php-fpm
 ```
 
-## Supported tags
-
-* `8.3`, `8.3-bookworm`, `8.3.2`, `8.3.2-bookworm`, `8.3.2-bookworm-r1`, `latest`
-* `8.2`, `8.2-bookworm`, `8.2.15`, `8.2.15-bookworm`, `8.2.15-bookworm-r1`
-* `8.1`, `8.1-bookworm`, `8.1.27`, `8.1.27-bookworm`, `8.1.27-bookworm-r2`
-
 ## Get this image
 
 The recommended way to get the PHP-FPM Image is to pull the prebuilt image from the [AWS Public ECR Gallery](https://gallery.ecr.aws/bitcompat/php-fpm) or from the [GitHub Container Registry](https://github.com/bitcompat/php-fpm/pkgs/container/php-fpm)
