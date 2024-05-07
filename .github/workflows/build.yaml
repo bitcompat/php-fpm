@@ -14,18 +14,18 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
-          - version: 8.3.6 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.3.7 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.3.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
-          - version: 8.2.18 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.2.19 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.3.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
           - version: 8.1.28 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.3.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
+            revision: 2
 
     permissions:
       contents: read
@@ -63,9 +63,6 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: |
-            image=moby/buildkit:v0.10.6
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
