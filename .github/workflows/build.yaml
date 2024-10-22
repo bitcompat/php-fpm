@@ -14,6 +14,10 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
+          - version: 8.4.0RC3
+            latest: false
+            xdebug: 3.3.2 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 1
           - version: 8.3.13 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.3.2 # renovate: datasource=github-tags depName=xdebug/xdebug
@@ -25,7 +29,7 @@ jobs:
           - version: 8.1.30 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.3.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
+            revision: 2
 
     permissions:
       contents: read
