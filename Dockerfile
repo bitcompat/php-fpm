@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.10
+# syntax=docker/dockerfile:1.12
 
 ARG PHP_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
