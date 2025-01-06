@@ -114,14 +114,17 @@ RUN pecl install apcu-$APCU_VERSION
 RUN <<EOT
   set -eux
   curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/641.patch > 0001-unterminated-preprocessor-conditions.patch
+  curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/690.patch > 0002-removed-php_strtolower.patch
   git clone -b $IMAGICK_VERSION https://github.com/Imagick/imagick
   cd imagick
   git apply ../0001-unterminated-preprocessor-conditions.patch
+  git apply ../0002-removed-php_strtolower.patch
   phpize && ./configure
   make -j$(nproc)
   make install
   cd ..
   rm -rf imagick 0001-unterminated-preprocessor-conditions.patch
+  rm -rf imagick 0002-removed-php_strtolower.patch
 EOT
 RUN <<EOT
   set -eux
