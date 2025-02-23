@@ -14,22 +14,22 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
-          - version: 8.4.2 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.4.4 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
-            xdebug: 3.4.0 # renovate: datasource=github-tags depName=xdebug/xdebug
+            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
-          - version: 8.3.15 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.3.17 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
-            xdebug: 3.4.0 # renovate: datasource=github-tags depName=xdebug/xdebug
+            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
           - version: 8.2.27 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
-            xdebug: 3.4.0 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
+            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 2
           - version: 8.1.31 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
-            xdebug: 3.4.0 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
+            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 2
 
     permissions:
       contents: read
@@ -101,7 +101,7 @@ jobs:
             type=sha,format=long
 
       - name: Build and Push container images
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64,linux/arm64
           build-args: |

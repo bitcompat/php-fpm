@@ -1,12 +1,12 @@
-# syntax=docker/dockerfile:1.12
+# syntax=docker/dockerfile:1.14
 
 ARG PHP_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
-ARG LIBMAXMINDDB_VERSION=1.11.0
+ARG LIBMAXMINDDB_VERSION=1.12.2
 # renovate: datasource=github-tags depName=xdebug/xdebug
-ARG XDEBUG_VERSION=3.4.0
+ARG XDEBUG_VERSION=3.4.1
 
-FROM bitnami/minideb:bookworm as libmaxminddb_build
+FROM bitnami/minideb:bookworm AS libmaxminddb_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG LIBMAXMINDDB_VERSION
@@ -28,7 +28,7 @@ RUN rm -rf /opt/bitnami/common/lib/libmaxminddb.a /opt/bitnami/common/lib/libmax
 RUN mkdir -p /opt/bitnami/licenses && \
     cp libmaxminddb-${LIBMAXMINDDB_VERSION}/LICENSE /opt/bitnami/licenses/libmaxminddb-${LIBMAXMINDDB_VERSION}.txt
 
-FROM bitnami/minideb:bookworm as imap_build
+FROM bitnami/minideb:bookworm AS imap_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/blacksmith-sandbox
@@ -44,7 +44,7 @@ RUN cd imap-2007.0.0 && \
     touch ip6 && \
     make ldb IP=6 SSLTYPE=unix.nopwd EXTRACFLAGS=-fPIC
 
-FROM bitnami/minideb:bookworm as php_build
+FROM bitnami/minideb:bookworm AS php_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG PHP_VERSION
@@ -89,7 +89,7 @@ ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
 # renovate: datasource=github-releases depName=composer/composer
-ARG COMPOSER_VERSION=2.8.4
+ARG COMPOSER_VERSION=2.8.5
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
@@ -115,16 +115,12 @@ RUN <<EOT
   set -eux
   curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/641.patch > 0001-unterminated-preprocessor-conditions.patch
   curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/690.patch > 0002-removed-php_strtolower.patch
-  git clone -b $IMAGICK_VERSION https://github.com/Imagick/imagick
+  git clone -b develop https://github.com/Imagick/imagick
   cd imagick
-  git apply ../0001-unterminated-preprocessor-conditions.patch
-  git apply ../0002-removed-php_strtolower.patch
   phpize && ./configure
   make -j$(nproc)
   make install
   cd ..
-  rm -rf imagick 0001-unterminated-preprocessor-conditions.patch
-  rm -rf imagick 0002-removed-php_strtolower.patch
 EOT
 RUN <<EOT
   set -eux
@@ -186,7 +182,7 @@ RUN <<EOT bash
     done
 EOT
 
-FROM bitnami/minideb:bookworm as stage-0
+FROM bitnami/minideb:bookworm AS stage-0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DIRS_TO_TRIM="/usr/share/man \
