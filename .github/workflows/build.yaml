@@ -14,22 +14,22 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
-          - version: 8.4.4 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.4.5 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
-            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
+            xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
-          - version: 8.3.17 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.3.19 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
-            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
+            xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
             revision: 1
-          - version: 8.2.27 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.2.28 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
-            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 2
-          - version: 8.1.31 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+            xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 1
+          - version: 8.1.32 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
-            xdebug: 3.4.1 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 2
+            xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
+            revision: 1
 
     permissions:
       contents: read
@@ -89,7 +89,7 @@ jobs:
 
       - id: docker_meta
         name: Extract docker image metadata
-        uses: docker/metadata-action@v5.6.1
+        uses: docker/metadata-action@v5.7.0
         with:
           images: |
             ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
