@@ -103,7 +103,7 @@ ARG MEMCACHED_VERSION=3.3.0
 # renovate: datasource=github-releases depName=krakjoe/apcu extractVersion=^v(?<version>.*)$
 ARG APCU_VERSION=5.1.24
 # renovate: datasource=github-releases depName=Imagick/imagick
-ARG IMAGICK_VERSION=3.7.0
+ARG IMAGICK_VERSION=3.8.0
 # renovate: datasource=github-releases depName=mongodb/mongo-php-driver
 ARG MONGODB_VERSION=1.21.0
 ARG XDEBUG_VERSION
