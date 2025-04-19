@@ -110,18 +110,7 @@ ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
 ARG MAXMIND_READER_VERSION=1.12.0
 
-RUN pecl install apcu-$APCU_VERSION
-RUN <<EOT
-  set -eux
-  curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/641.patch > 0001-unterminated-preprocessor-conditions.patch
-  curl https://patch-diff.githubusercontent.com/raw/Imagick/imagick/pull/690.patch > 0002-removed-php_strtolower.patch
-  git clone -b develop https://github.com/Imagick/imagick
-  cd imagick
-  phpize && ./configure
-  make -j$(nproc)
-  make install
-  cd ..
-EOT
+RUN pecl install apcu-$APCU_VERSION imagick-$IMAGICK_VERSION
 RUN <<EOT
   set -eux
 
