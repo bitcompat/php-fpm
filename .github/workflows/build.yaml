@@ -8,8 +8,6 @@ on:
 jobs:
   build_package:
     name: Build package - PHP ${{ matrix.php_version.version }}
-    runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -17,118 +15,34 @@ jobs:
           - version: 8.4.6 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
+            cache-scope: php-84
           - version: 8.3.20 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 1
+            cache-scope: php-83
           - version: 8.2.28 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 2
+            cache-scope: php-82
           - version: 8.1.32 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.4.2 # renovate: datasource=github-tags depName=xdebug/xdebug
-            revision: 2
+            cache-scope: php-81
 
     permissions:
       contents: read
       packages: write
       id-token: write
 
-    steps:
-      - uses: actions/checkout@master
-        with:
-          fetch-depth: 1
-
-      - uses: actions/github-script@v7
-        id: version-tags
-        env:
-          VERSION: '${{ matrix.php_version.version }}'
-          REVISION: '${{ matrix.php_version.revision }}'
-        with:
-          result-encoding: string
-          script: |
-            const { REVISION: revision, VERSION: version } = process.env;
-            const [ major, minor, patch ] = version.split('.').filter(V => '' !== V);
-            
-            return `
-            ${major}.${minor}.${patch}-bookworm-r${revision}
-            ${major}.${minor}.${patch}-bookworm
-            ${major}.${minor}.${patch}
-            ${major}.${minor}-bookworm
-            ${major}.${minor}
-            `;
-
-      - name: Install Cosign
-        uses: sigstore/cosign-installer@main
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: us-east-1
-
-      - name: Login to Amazon ECR Public
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        with:
-          registry-type: public
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - id: docker_meta
-        name: Extract docker image metadata
-        uses: docker/metadata-action@v5.7.0
-        with:
-          images: |
-            ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
-            public.ecr.aws/bitcompat/${{ github.event.repository.name }}
-          tags: |
-            ${{ matrix.php_version.latest && 'latest' || '' }}
-            ${{ steps.version-tags.outputs.result }}
-            type=sha
-            type=sha,format=long
-
-      - name: Build and Push container images
-        uses: docker/build-push-action@v6
-        with:
-          platforms: linux/amd64,linux/arm64
-          build-args: |
-            PHP_VERSION=${{ matrix.php_version.version }}
-            XDEBUG_VERSION=${{ matrix.php_version.xdebug }}
-          push: true
-          context: .
-          tags: ${{ steps.docker_meta.outputs.tags }}
-          labels: ${{ steps.docker_meta.outputs.labels }}
-
-      - name: Setup CRANE
-        uses: imjasonh/setup-crane@v0.4
-
-      - name: Login to ECR Public in CRANE
-        run: crane auth login public.ecr.aws -u "${{ steps.login-ecr.outputs.docker_username_public_ecr_aws }}" -p "${{ steps.login-ecr.outputs.docker_password_public_ecr_aws }}"
-
-      - name: Flatten images
-        run: |
-          echo $DOCKER_METADATA_OUTPUT_JSON | jq -r '.tags[]' | 
-            while read -r IMG; do
-              crane flatten "$IMG"
-            done
-
-      - name: Sign image with a key
-        run: |
-          cosign sign --yes --key env://COSIGN_PRIVATE_KEY ${TAGS}
-        env:
-          TAGS: ${{ steps.docker_meta.outputs.tags }}
-          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
-          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+    uses: bitcompat/base/.github/workflows/build.yaml@main
+    with:
+      name: main
+      cache-scope: '${{ matrix.php_version.cache-scope }}'
+      version: ${{ matrix.php_version.version }}
+      latest: ${{ matrix.php_version.latest }}
+      major_only_tag: false
+      debian_codename: bookworm
+      build-args: |
+        PHP_VERSION=${{ matrix.php_version.version }}
+        XDEBUG_VERSION=${{ matrix.php_version.xdebug }}
+    secrets: inherit
