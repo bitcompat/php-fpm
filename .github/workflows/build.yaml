@@ -43,6 +43,5 @@ jobs:
       major_only_tag: false
       debian_codename: bookworm
       build-args: |
-        PHP_VERSION=${{ matrix.php_version.version }}
         XDEBUG_VERSION=${{ matrix.php_version.xdebug }}
     secrets: inherit

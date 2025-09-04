@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.17
 
-ARG PHP_VERSION
+ARG BUILD_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
 ARG LIBMAXMINDDB_VERSION=1.12.2
 # renovate: datasource=github-tags depName=xdebug/xdebug
@@ -25,29 +25,13 @@ RUN cd libmaxminddb-${LIBMAXMINDDB_VERSION} && \
     make install
 
 RUN rm -rf /opt/bitnami/common/lib/libmaxminddb.a /opt/bitnami/common/lib/libmaxminddb.la /opt/bitnami/common/share
-RUN mkdir -p /opt/bitnami/licenses && \
-    cp libmaxminddb-${LIBMAXMINDDB_VERSION}/LICENSE /opt/bitnami/licenses/libmaxminddb-${LIBMAXMINDDB_VERSION}.txt
-
-FROM bitnami/minideb:bookworm AS imap_build
-
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN mkdir -p /opt/blacksmith-sandbox
-RUN install_packages ca-certificates curl git build-essential unzip libpam0g-dev libssl-dev libkrb5-dev
-
-WORKDIR /bitnami/blacksmith-sandbox
-
-RUN curl -sSL -oimap.zip https://github.com/uw-imap/imap/archive/refs/heads/master.zip && \
-    unzip imap.zip && \
-    mv imap-master imap-2007.0.0
-
-RUN cd imap-2007.0.0 && \
-    touch ip6 && \
-    make ldb IP=6 SSLTYPE=unix.nopwd EXTRACFLAGS=-fPIC
+RUN mkdir -p /opt/bitnami/common/licenses && \
+    cp libmaxminddb-${LIBMAXMINDDB_VERSION}/LICENSE /opt/bitnami/common/licenses/libmaxminddb-${LIBMAXMINDDB_VERSION}.txt
 
 FROM bitnami/minideb:bookworm AS php_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ARG PHP_VERSION
+ARG BUILD_VERSION
 
 COPY --link prebuildfs/ /
 RUN mkdir -p /opt/blacksmith-sandbox
@@ -55,7 +39,6 @@ RUN install_packages ca-certificates curl git build-essential unzip libssl-dev
 
 WORKDIR /bitnami/blacksmith-sandbox
 
-COPY --link --from=imap_build /bitnami/blacksmith-sandbox/imap-2007.0.0 /bitnami/blacksmith-sandbox/imap-2007.0.0
 RUN install_packages gnupg && \
     (curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null) && \
     echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list
@@ -67,23 +50,24 @@ RUN install_packages pkg-config build-essential autoconf bison re2c \
 
 ENV EXTENSION_DIR=/opt/bitnami/php/lib/php/extensions
 
-ADD --link https://github.com/php/php-src/archive/refs/tags/php-${PHP_VERSION}.tar.gz php.tar.gz
+ADD --link https://github.com/php/php-src/archive/refs/tags/php-${BUILD_VERSION}.tar.gz php.tar.gz
 RUN <<EOT bash
     set -e
     tar xf php.tar.gz
-    mv php-src-php-${PHP_VERSION} php-${PHP_VERSION}
-    cd php-${PHP_VERSION}
+    mv php-src-php-${BUILD_VERSION} php-${BUILD_VERSION}
+    cd php-${BUILD_VERSION}
     ./buildconf -f
 
-    /bitnami/blacksmith-sandbox/php-${PHP_VERSION}/configure --prefix=/opt/bitnami/php --with-imap=/bitnami/blacksmith-sandbox/imap-2007.0.0 --with-imap-ssl --with-zlib --with-libxml-dir=/usr --enable-soap --disable-rpath --enable-inline-optimization --with-bz2 \
-        --enable-sockets --enable-pcntl --enable-exif --enable-bcmath --with-pdo-mysql=mysqlnd --with-mysqli=mysqlnd --with-png-dir=/usr --with-openssl --with-libdir=/lib/$(gcc -dumpmachine) --enable-ftp --enable-calendar --with-gettext --with-xmlrpc --with-xsl --enable-fpm \
-        --with-fpm-user=daemon --with-fpm-group=daemon --enable-mbstring --enable-cgi --enable-ctype --enable-session --enable-mysqlnd --enable-intl --with-iconv --with-pdo_sqlite --with-sqlite3 --with-readline --with-gmp --with-curl --with-pdo-pgsql=shared \
-        --with-pgsql=shared --with-config-file-scan-dir=/opt/bitnami/php/etc/conf.d --enable-simplexml --with-sodium --enable-gd --with-pear --with-freetype --with-jpeg --with-webp --with-zip --with-pdo-dblib=shared --with-tidy --with-ldap=/usr/ --enable-apcu=shared --enable-opcache
+    /bitnami/blacksmith-sandbox/php-${BUILD_VERSION}/configure --prefix=/opt/bitnami/php --with-zlib-dir --with-zlib --with-libxml-dir=/usr --enable-soap --disable-rpath \
+        --enable-inline-optimization --with-bz2 --enable-sockets --enable-pcntl --enable-exif --enable-bcmath --with-pdo-mysql=mysqlnd --with-mysqli=mysqlnd --with-png-dir=/usr \
+        --with-openssl --with-libdir=/lib/$(gcc -dumpmachine) --enable-ftp --enable-calendar --with-gettext --with-xmlrpc --with-xsl --enable-fpm --with-fpm-user=daemon \
+        --with-fpm-group=daemon --enable-mbstring --enable-cgi --enable-ctype --enable-session --enable-mysqlnd --enable-intl --with-iconv --with-pdo_sqlite --with-sqlite3 \
+        --with-readline --with-gmp --with-curl --with-pdo-pgsql=shared --with-pgsql=shared --with-config-file-scan-dir=/opt/bitnami/php/etc/conf.d --enable-simplexml \
+        --with-sodium --enable-gd --with-pear --with-freetype --with-jpeg --with-webp --with-zip --with-pdo-dblib=shared --with-tidy --with-ldap=/usr/ --enable-apcu=shared \
+        PKG_CONFIG_PATH=/opt/bitnami/common/lib/pkgconfig EXTENSION_DIR=/opt/bitnami/php/lib/php/extensions
     make -j$(nproc)
     make install
 EOT
-
-RUN cp /bitnami/blacksmith-sandbox/imap-2007.0.0/LICENSE /opt/bitnami/licenses/imap-2007.0.0.txt
 
 ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
@@ -113,6 +97,7 @@ ARG MAXMIND_READER_VERSION=1.12.1
 RUN pecl install apcu-$APCU_VERSION imagick-$IMAGICK_VERSION
 RUN <<EOT
   set -eux
+  mkdir -p /opt/bitnami/common/licenses
 
   git clone https://github.com/awslabs/aws-elasticache-cluster-client-libmemcached.git
   cd aws-elasticache-cluster-client-libmemcached
@@ -121,6 +106,7 @@ RUN <<EOT
   cd BUILD
   ../configure --with-pic --disable-sasl
   make -j$(nproc) && make install
+  cp ../LICENSE /opt/bitnami/common/licenses/libmemcached-1.0.18.txt
   cd ../..
   rm -rf aws-elasticache-cluster-client-libmemcached
 
@@ -131,6 +117,7 @@ RUN <<EOT
   cd BUILD
   ../configure --disable-memcached-sasl
   make -j$(nproc) && make install
+  cp ../LICENSE /opt/bitnami/common/licenses/aws-elasticache-cluster-client-memcached-for-php-3.2.0.txt
   cd ../..
   rm -rf aws-elasticache-cluster-client-memcached-for-php
 EOT
@@ -147,14 +134,14 @@ RUN find /opt/bitnami/ -name "*.so*" -type f | xargs strip --strip-debug
 RUN find /opt/bitnami/ -executable -type f | xargs strip --strip-unneeded || true
 RUN mkdir -p /opt/bitnami/php/etc/conf.d
 
-ADD --link https://raw.githubusercontent.com/composer/composer/$COMPOSER_VERSION/LICENSE /opt/bitnami/licenses/composer-$COMPOSER_VERSION.txt
-ADD --link https://raw.githubusercontent.com/php-memcached-dev/php-memcached/v$MEMCACHED_VERSION/LICENSE /opt/bitnami/licenses/libmemcached-$MEMCACHED_VERSION.txt
-ADD --link https://raw.githubusercontent.com/krakjoe/apcu/v$APCU_VERSION/LICENSE /opt/bitnami/licenses/peclapcu-$APCU_VERSION.txt
-ADD --link https://raw.githubusercontent.com/Imagick/imagick/$IMAGICK_VERSION/LICENSE /opt/bitnami/licenses/peclimagick-$IMAGICK_VERSION.txt
-ADD --link https://raw.githubusercontent.com/mongodb/mongo-php-driver/$MONGODB_VERSION/LICENSE /opt/bitnami/licenses/peclmongodb-$MONGODB_VERSION.txt
-ADD --link https://raw.githubusercontent.com/xdebug/xdebug/$XDEBUG_VERSION/LICENSE /opt/bitnami/licenses/peclxdebug-$XDEBUG_VERSION.txt
-ADD --link https://raw.githubusercontent.com/maxmind/MaxMind-DB-Reader-php/v$MAXMIND_READER_VERSION/LICENSE /opt/bitnami/licenses/maxmind-db-reader-php-$MAXMIND_READER_VERSION.txt
-RUN cp /bitnami/blacksmith-sandbox/php-${PHP_VERSION}/LICENSE /opt/bitnami/licenses/php-$PHP_VERSION.txt
+ADD --link https://raw.githubusercontent.com/composer/composer/$COMPOSER_VERSION/LICENSE /opt/bitnami/php/licenses/composer-$COMPOSER_VERSION.txt
+ADD --link https://raw.githubusercontent.com/php-memcached-dev/php-memcached/v$MEMCACHED_VERSION/LICENSE /opt/bitnami/php/licenses/libmemcached-$MEMCACHED_VERSION.txt
+ADD --link https://raw.githubusercontent.com/krakjoe/apcu/v$APCU_VERSION/LICENSE /opt/bitnami/php/licenses/peclapcu-$APCU_VERSION.txt
+ADD --link https://raw.githubusercontent.com/Imagick/imagick/$IMAGICK_VERSION/LICENSE /opt/bitnami/php/licenses/peclimagick-$IMAGICK_VERSION.txt
+ADD --link https://raw.githubusercontent.com/mongodb/mongo-php-driver/$MONGODB_VERSION/LICENSE /opt/bitnami/php/licenses/peclmongodb-$MONGODB_VERSION.txt
+ADD --link https://raw.githubusercontent.com/xdebug/xdebug/$XDEBUG_VERSION/LICENSE /opt/bitnami/php/licenses/peclxdebug-$XDEBUG_VERSION.txt
+ADD --link https://raw.githubusercontent.com/maxmind/MaxMind-DB-Reader-php/v$MAXMIND_READER_VERSION/LICENSE /opt/bitnami/php/licenses/maxmind-db-reader-php-$MAXMIND_READER_VERSION.txt
+RUN cp /bitnami/blacksmith-sandbox/php-${BUILD_VERSION}/LICENSE /opt/bitnami/php/licenses/php-$BUILD_VERSION.txt
 RUN mkdir -p /opt/bitnami/php/lib && ln -sv ../etc/php.ini /opt/bitnami/php/lib/php.ini
 
 RUN php -i # Test run executable
@@ -184,13 +171,13 @@ ARG DIRS_TO_TRIM="/usr/share/man \
 
 RUN <<EOT bash
     set -e
-    install_packages ca-certificates curl gzip git libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4 libcurl3-gnutls libexpat1 libffi8 libfftw3-double3  \
-        libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2  \
+    install_packages ca-certificates curl gzip libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4 libexpat1 libffi8 libfftw3-double3  \
+        libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libbrotli1 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2  \
         libhogweed6 libicu72 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.5-0  \
-        liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libncurses6 perl  \
-        libnettle8 libnghttp2-14 libonig5 libp11-kit0 libpcre3 libpng16-16 libpq5 libpsl5 libreadline8 librtmp1 libsasl2-2  \
+        liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libhashkit2 libsqlite3-0 libwebp7 perl  \
+        libnettle8 libnghttp2-14 libonig5 libp11-kit0 libpng16-16 libpq5 libpsl5 libreadline8 librtmp1 libsasl2-2  \
         libsodium23 libssh2-1 libssl3 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6  \
-        libxau6 libxcb1 libxdmcp6 libxext6 libxslt1.1 libzip4 procps tar zlib1g libgdbm6 sqlite3
+        libxau6 libxcb1 libxdmcp6 libxext6 libxslt1.1 libzip4 procps tar zlib1g libgdbm6 libxml2
 
     for DIR in $DIRS_TO_TRIM; do
       find \$DIR/ -delete -print
@@ -208,18 +195,18 @@ RUN <<EOT bash
     find /usr/share/doc -mindepth 1 -type d -empty -delete
 EOT
 
+COPY --link rootfs/ /
 COPY --from=php_build /opt/bitnami /opt/bitnami
 COPY --from=php_build /usr/local/lib/libhashkit*.so* /usr/local/lib/
 COPY --from=php_build /usr/local/lib/libmemcached*.so* /usr/local/lib/
 
-ARG PHP_VERSION
+ARG BUILD_VERSION
 ARG TARGETARCH
-ENV APP_VERSION=$PHP_VERSION \
+ENV APP_VERSION=$BUILD_VERSION \
     BITNAMI_APP_NAME=php-fpm \
-    BITNAMI_IMAGE_VERSION="${PHP_VERSION}-prod-debian-11" \
     PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:$PATH" \
     OS_ARCH=$TARGETARCH \
-    OS_FLAVOUR="debian-11" \
+    OS_FLAVOUR="debian-12" \
     OS_NAME="linux"
 
 EXPOSE 9000
