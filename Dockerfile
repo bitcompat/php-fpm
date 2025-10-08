@@ -89,7 +89,7 @@ ARG APCU_VERSION=5.1.27
 # renovate: datasource=github-releases depName=Imagick/imagick
 ARG IMAGICK_VERSION=3.8.0
 # renovate: datasource=github-releases depName=mongodb/mongo-php-driver
-ARG MONGODB_VERSION=2.1.1
+ARG MONGODB_VERSION=2.1.4
 ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
 ARG MAXMIND_READER_VERSION=1.12.1
