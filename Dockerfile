@@ -1,8 +1,8 @@
-# syntax=docker/dockerfile:1.19
+# syntax=docker/dockerfile:1.20
 
 ARG BUILD_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
-ARG LIBMAXMINDDB_VERSION=1.12.2
+ARG LIBMAXMINDDB_VERSION=1.12.1
 # renovate: datasource=github-tags depName=xdebug/xdebug
 ARG XDEBUG_VERSION=3.4.6
 
@@ -73,7 +73,7 @@ ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
 # renovate: datasource=github-releases depName=composer/composer
-ARG COMPOSER_VERSION=2.8.12
+ARG COMPOSER_VERSION=2.9.2
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
@@ -92,7 +92,7 @@ ARG IMAGICK_VERSION=3.8.0
 ARG MONGODB_VERSION=2.1.4
 ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
-ARG MAXMIND_READER_VERSION=1.12.1
+ARG MAXMIND_READER_VERSION=1.13.1
 
 RUN pecl install apcu-$APCU_VERSION imagick-$IMAGICK_VERSION
 RUN <<EOT
