@@ -72,9 +72,13 @@ EOT
 ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
+# renovate: datasource=github-releases depName=php/pie
+ARG PIE_VERSION=1.3.0
+ADD --link https://github.com/php/pie/releases/download/${PIE_VERSION}/pie.phar /opt/bitnami/php/bin/pie
+RUN chmod 755 /opt/bitnami/php/bin/pie
+
 # renovate: datasource=github-releases depName=composer/composer
 ARG COMPOSER_VERSION=2.9.2
-
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
     ln -sv /opt/bitnami/php/bin/composer.phar /opt/bitnami/php/bin/composer
@@ -94,7 +98,9 @@ ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
 ARG MAXMIND_READER_VERSION=1.13.1
 
-RUN pecl install apcu-$APCU_VERSION imagick-$IMAGICK_VERSION
+RUN pie install apcu/apcu:$APCU_VERSION && \
+    pie install imagick/imagick:$IMAGICK_VERSION
+
 RUN <<EOT
   set -eux
   mkdir -p /opt/bitnami/common/licenses
@@ -121,9 +127,9 @@ RUN <<EOT
   cd ../..
   rm -rf aws-elasticache-cluster-client-memcached-for-php
 EOT
-RUN PKG_CONFIG_PATH=/opt/bitnami/common/lib/pkgconfig:\$PKG_CONFIG_PATH pecl install maxminddb-$MAXMIND_READER_VERSION
-RUN pecl install mongodb-$MONGODB_VERSION
-RUN pecl install xdebug-$XDEBUG_VERSION
+RUN PKG_CONFIG_PATH=/opt/bitnami/common/lib/pkgconfig:\$PKG_CONFIG_PATH pie install maxmind-db/reader-ext:$MAXMIND_READER_VERSION
+RUN pie install mongodb/mongodb-extension:$MONGODB_VERSION
+RUN pie install xdebug/xdebug:$XDEBUG_VERSION
 
 RUN mkdir -p /opt/bitnami/php/logs && \
     mkdir -p /opt/bitnami/php/tmp && \
@@ -136,10 +142,10 @@ RUN mkdir -p /opt/bitnami/php/etc/conf.d
 
 ADD --link https://raw.githubusercontent.com/composer/composer/$COMPOSER_VERSION/LICENSE /opt/bitnami/php/licenses/composer-$COMPOSER_VERSION.txt
 ADD --link https://raw.githubusercontent.com/php-memcached-dev/php-memcached/v$MEMCACHED_VERSION/LICENSE /opt/bitnami/php/licenses/libmemcached-$MEMCACHED_VERSION.txt
-ADD --link https://raw.githubusercontent.com/krakjoe/apcu/v$APCU_VERSION/LICENSE /opt/bitnami/php/licenses/peclapcu-$APCU_VERSION.txt
-ADD --link https://raw.githubusercontent.com/Imagick/imagick/$IMAGICK_VERSION/LICENSE /opt/bitnami/php/licenses/peclimagick-$IMAGICK_VERSION.txt
-ADD --link https://raw.githubusercontent.com/mongodb/mongo-php-driver/$MONGODB_VERSION/LICENSE /opt/bitnami/php/licenses/peclmongodb-$MONGODB_VERSION.txt
-ADD --link https://raw.githubusercontent.com/xdebug/xdebug/$XDEBUG_VERSION/LICENSE /opt/bitnami/php/licenses/peclxdebug-$XDEBUG_VERSION.txt
+ADD --link https://raw.githubusercontent.com/krakjoe/apcu/v$APCU_VERSION/LICENSE /opt/bitnami/php/licenses/ext-apcu-$APCU_VERSION.txt
+ADD --link https://raw.githubusercontent.com/Imagick/imagick/$IMAGICK_VERSION/LICENSE /opt/bitnami/php/licenses/ext-imagick-$IMAGICK_VERSION.txt
+ADD --link https://raw.githubusercontent.com/mongodb/mongo-php-driver/$MONGODB_VERSION/LICENSE /opt/bitnami/php/licenses/ext-mongodb-$MONGODB_VERSION.txt
+ADD --link https://raw.githubusercontent.com/xdebug/xdebug/$XDEBUG_VERSION/LICENSE /opt/bitnami/php/licenses/ext-xdebug-$XDEBUG_VERSION.txt
 ADD --link https://raw.githubusercontent.com/maxmind/MaxMind-DB-Reader-php/v$MAXMIND_READER_VERSION/LICENSE /opt/bitnami/php/licenses/maxmind-db-reader-php-$MAXMIND_READER_VERSION.txt
 RUN cp /bitnami/blacksmith-sandbox/php-${BUILD_VERSION}/LICENSE /opt/bitnami/php/licenses/php-$BUILD_VERSION.txt
 RUN mkdir -p /opt/bitnami/php/lib && ln -sv ../etc/php.ini /opt/bitnami/php/lib/php.ini
@@ -149,7 +155,6 @@ RUN php -i # Test run executable
 ARG DIRS_TO_TRIM="/opt/bitnami/php/lib/php/test \
     /opt/bitnami/php/lib/php/doc \
     /opt/bitnami/php/php/man \
-    /opt/bitnami/php/lib/php/.registry/.channel.pecl.php.net \
 "
 
 RUN <<EOT bash
