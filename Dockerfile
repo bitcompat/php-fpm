@@ -89,7 +89,7 @@ COPY --link rootfs/ /
 # renovate: datasource=github-releases depName=php-memcached-dev/php-memcached
 ARG MEMCACHED_VERSION=3.4.0
 # renovate: datasource=github-releases depName=krakjoe/apcu extractVersion=^v(?<version>.*)$
-ARG APCU_VERSION=5.1.27
+ARG APCU_VERSION=5.1.28
 # renovate: datasource=github-releases depName=Imagick/imagick
 ARG IMAGICK_VERSION=3.8.1
 # renovate: datasource=github-releases depName=mongodb/mongo-php-driver
