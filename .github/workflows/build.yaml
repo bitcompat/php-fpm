@@ -16,7 +16,7 @@ jobs:
             latest: true
             xdebug: 3.5.0 # renovate: datasource=github-tags depName=xdebug/xdebug
             cache-scope: php-85
-          - version: 8.4.15 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.4.16 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.5.0 # renovate: datasource=github-tags depName=xdebug/xdebug
             cache-scope: php-84
