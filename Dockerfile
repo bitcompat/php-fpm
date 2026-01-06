@@ -73,7 +73,7 @@ ENV PATH=/opt/bitnami/php/bin:$PATH
 ENV LD_LIBRARY_PATH=/opt/bitnami/lib
 
 # renovate: datasource=github-releases depName=php/pie
-ARG PIE_VERSION=1.3.4
+ARG PIE_VERSION=1.3.5
 ADD --link https://github.com/php/pie/releases/download/${PIE_VERSION}/pie.phar /opt/bitnami/php/bin/pie
 RUN chmod 755 /opt/bitnami/php/bin/pie
 
