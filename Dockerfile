@@ -78,7 +78,7 @@ ADD --link https://github.com/php/pie/releases/download/${PIE_VERSION}/pie.phar 
 RUN chmod 755 /opt/bitnami/php/bin/pie
 
 # renovate: datasource=github-releases depName=composer/composer
-ARG COMPOSER_VERSION=2.9.3
+ARG COMPOSER_VERSION=2.9.4
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     php composer-setup.php --install-dir=/opt/bitnami/php/bin --version=$COMPOSER_VERSION && \
     ln -sv /opt/bitnami/php/bin/composer.phar /opt/bitnami/php/bin/composer
