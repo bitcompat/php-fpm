@@ -2,7 +2,7 @@
 
 ARG BUILD_VERSION
 # renovate: datasource=github-releases depName=maxmind/libmaxminddb
-ARG LIBMAXMINDDB_VERSION=1.13.3
+ARG LIBMAXMINDDB_VERSION=1.14.0
 # renovate: datasource=github-tags depName=xdebug/xdebug
 ARG XDEBUG_VERSION=3.5.3
 
