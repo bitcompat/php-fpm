@@ -96,7 +96,7 @@ ARG IMAGICK_VERSION=3.8.1
 ARG MONGODB_VERSION=2.3.3
 ARG XDEBUG_VERSION
 # renovate: datasource=github-releases depName=maxmind/MaxMind-DB-Reader-php extractVersion=^v(?<version>.*)$
-ARG MAXMIND_READER_VERSION=1.13.1
+ARG MAXMIND_READER_VERSION=1.14.0
 
 RUN pie install apcu/apcu:$APCU_VERSION && \
     pie install imagick/imagick:$IMAGICK_VERSION
