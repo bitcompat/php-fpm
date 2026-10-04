@@ -110,8 +110,9 @@ RUN <<EOT
   touch configure.ac aclocal.m4 configure Makefile.am Makefile.in
   mkdir BUILD
   cd BUILD
-  ../configure --with-pic --disable-sasl
   # Upstream libtest links libmemcached without declaring the build dependency.
+  # Disable configure's recursive -j override as well as the top-level jobs.
+  ../configure --with-pic --disable-sasl --disable-jobserver
   make -j1
   make install
   cp ../LICENSE /opt/bitnami/common/licenses/libmemcached-1.0.18.txt
@@ -228,4 +229,3 @@ EXPOSE 9000
 WORKDIR /app
 
 CMD ["php-fpm", "-F", "--pid", "/opt/bitnami/php/tmp/php-fpm.pid", "-y", "/opt/bitnami/php/etc/php-fpm.conf"]
-
