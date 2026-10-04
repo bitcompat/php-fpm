@@ -6,7 +6,7 @@ ARG LIBMAXMINDDB_VERSION=1.14.1
 # renovate: datasource=github-tags depName=xdebug/xdebug
 ARG XDEBUG_VERSION=3.5.3
 
-FROM bitnami/minideb:bookworm AS libmaxminddb_build
+FROM bitnami/minideb:trixie AS libmaxminddb_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG LIBMAXMINDDB_VERSION
@@ -28,7 +28,7 @@ RUN rm -rf /opt/bitnami/common/lib/libmaxminddb.a /opt/bitnami/common/lib/libmax
 RUN mkdir -p /opt/bitnami/common/licenses && \
     cp libmaxminddb-${LIBMAXMINDDB_VERSION}/LICENSE /opt/bitnami/common/licenses/libmaxminddb-${LIBMAXMINDDB_VERSION}.txt
 
-FROM bitnami/minideb:bookworm AS php_build
+FROM bitnami/minideb:trixie AS php_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG BUILD_VERSION
@@ -41,10 +41,10 @@ WORKDIR /bitnami/blacksmith-sandbox
 
 RUN install_packages gnupg && \
     (curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null) && \
-    echo "deb http://apt.postgresql.org/pub/repos/apt bookworm-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+    echo "deb http://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 RUN install_packages pkg-config build-essential autoconf bison re2c \
       zlib1g-dev libbz2-dev libcurl4-openssl-dev libpng-dev libwebp-dev libsqlite3-dev \
-      libjpeg-dev libfreetype6-dev libgmp-dev libpam0g-dev libicu-dev libldap2-dev libonig-dev freetds-dev \
+      libjpeg-dev libfreetype-dev libgmp-dev libpam0g-dev libicu-dev libldap2-dev libonig-dev freetds-dev \
       unzip libreadline-dev libsodium-dev libtidy-dev libxslt1-dev libzip-dev libmagickwand-dev \
       libmongo-client-dev libpq-dev libkrb5-dev file
 
@@ -163,7 +163,7 @@ RUN <<EOT bash
     done
 EOT
 
-FROM bitnami/minideb:bookworm AS stage-0
+FROM bitnami/minideb:trixie AS stage-0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG DIRS_TO_TRIM="/usr/share/man \
@@ -176,13 +176,13 @@ ARG DIRS_TO_TRIM="/usr/share/man \
 
 RUN <<EOT bash
     set -e
-    install_packages ca-certificates curl gzip libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4 libexpat1 libffi8 libfftw3-double3  \
-        libfontconfig1 libfreetype6 libgcc1 libgcrypt20 libbrotli1 libglib2.0-0 libgmp10 libgnutls30 libgomp1 libgpg-error0 libgssapi-krb5-2  \
-        libhogweed6 libicu72 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap-2.5-0  \
-        liblqr-1-0 libltdl7 liblzma5 libmagickcore-6.q16-6 libmagickwand-6.q16-6 libhashkit2 libsqlite3-0 libwebp7 perl  \
-        libnettle8 libnghttp2-14 libonig5 libp11-kit0 libpng16-16 libpq5 libpsl5 libreadline8 librtmp1 libsasl2-2  \
-        libsodium23 libssh2-1 libssl3 libstdc++6 libsybdb5 libtasn1-6 libtidy5deb1 libtinfo6 libunistring2 libuuid1 libx11-6  \
-        libxau6 libxcb1 libxdmcp6 libxext6 libxslt1.1 libzip4 procps tar zlib1g libgdbm6 libxml2
+    install_packages ca-certificates curl gzip libbsd0 libbz2-1.0 libc6 libcom-err2 libcurl4t64 libexpat1 libffi8 libfftw3-double3  \
+        libfontconfig1 libfreetype6 libgcc-s1 libgcrypt20 libbrotli1 libglib2.0-0t64 libgmp10 libgnutls30t64 libgomp1 libgpg-error0 libgssapi-krb5-2  \
+        libhogweed6t64 libicu76 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 liblcms2-2 libldap2  \
+        liblqr-1-0 libltdl7 liblzma5 libmagickcore-7.q16-10 libmagickwand-7.q16-10 libhashkit2t64 libsqlite3-0 libwebp7 perl  \
+        libnettle8t64 libnghttp2-14 libonig5 libp11-kit0 libpng16-16t64 libpq5 libpsl5t64 libreadline8t64 librtmp1 libsasl2-2  \
+        libsodium23 libssh2-1t64 libssl3t64 libstdc++6 libsybdb5 libtasn1-6 libtidy58 libtinfo6 libunistring5 libuuid1 libx11-6  \
+        libxau6 libxcb1 libxdmcp6 libxext6 libxslt1.1 libzip5 procps tar zlib1g libgdbm6t64 libxml2
 
     for DIR in $DIRS_TO_TRIM; do
       find \$DIR/ -delete -print
@@ -211,7 +211,7 @@ ENV APP_VERSION=$BUILD_VERSION \
     BITNAMI_APP_NAME=php-fpm \
     PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:$PATH" \
     OS_ARCH=$TARGETARCH \
-    OS_FLAVOUR="debian-12" \
+    OS_FLAVOUR="debian-13" \
     OS_NAME="linux"
 
 EXPOSE 9000
