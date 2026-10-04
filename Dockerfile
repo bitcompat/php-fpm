@@ -111,18 +111,25 @@ RUN <<EOT
   mkdir BUILD
   cd BUILD
   ../configure --with-pic --disable-sasl
-  make -j$(nproc) && make install
+  # Upstream libtest links libmemcached without declaring the build dependency.
+  make -j1
+  make install
   cp ../LICENSE /opt/bitnami/common/licenses/libmemcached-1.0.18.txt
   cd ../..
   rm -rf aws-elasticache-cluster-client-libmemcached
 
   git clone -b php8.x https://github.com/awslabs/aws-elasticache-cluster-client-memcached-for-php.git
   cd aws-elasticache-cluster-client-memcached-for-php
+  # Use Zend APIs available across PHP 8.1-8.5, including the removed 8.5 wrappers.
+  sed -i 's@ext/standard/php_smart_string.h@Zend/zend_smart_string.h@' php_memcached_private.h
+  sed -i 's/zend_exception_get_default()/zend_ce_exception/g' php_memcached.c
   phpize
   mkdir BUILD
   cd BUILD
   ../configure --disable-memcached-sasl
-  make -j$(nproc) && make install
+  make -j$(nproc)
+  make install
+  php -n -d extension="$EXTENSION_DIR/memcached.so" --ri memcached
   cp ../LICENSE /opt/bitnami/common/licenses/aws-elasticache-cluster-client-memcached-for-php-3.2.0.txt
   cd ../..
   rm -rf aws-elasticache-cluster-client-memcached-for-php
@@ -204,6 +211,9 @@ COPY --link rootfs/ /
 COPY --from=php_build /opt/bitnami /opt/bitnami
 COPY --from=php_build /usr/local/lib/libhashkit*.so* /usr/local/lib/
 COPY --from=php_build /usr/local/lib/libmemcached*.so* /usr/local/lib/
+
+# Check the installed extension against the final image's runtime libraries.
+RUN /opt/bitnami/php/bin/php -n -d extension=/opt/bitnami/php/lib/php/extensions/memcached.so --ri memcached
 
 ARG BUILD_VERSION
 ARG TARGETARCH
