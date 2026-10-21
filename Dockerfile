@@ -7,7 +7,7 @@ ARG LIBMAXMINDDB_VERSION=1.14.1
 ARG XDEBUG_VERSION=3.5.3
 
 # renovate: datasource=docker depName=anchore/syft
-FROM anchore/syft:v1.54.0@sha256:0356562f495d432056237fbea5cbc2d4839c9c75cd500784a66de2e7cc95ca7c AS sbom-generator
+FROM anchore/syft:v1.54.1@sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa AS sbom-generator
 
 FROM bitnami/minideb:trixie AS libmaxminddb_build
 
