@@ -12,19 +12,19 @@ jobs:
       fail-fast: false
       matrix:
         php_version:
-          - version: 8.5.11 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.5.12 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: true
             xdebug: 3.5.3 # renovate: datasource=github-tags depName=xdebug/xdebug
             cache-scope: php-85
-          - version: 8.4.26 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.4.27 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.5.3 # renovate: datasource=github-tags depName=xdebug/xdebug
             cache-scope: php-84
-          - version: 8.3.35 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.3.36 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.5.3 # renovate: datasource=github-tags depName=xdebug/xdebug
             cache-scope: php-83
-          - version: 8.2.34 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
+          - version: 8.2.35 # renovate: datasource=github-tags depName=php/php-src extractVersion=^php-(?<version>\d+\.\d+.\d+)$
             latest: false
             xdebug: 3.5.3 # renovate: datasource=github-tags depName=xdebug/xdebug
             cache-scope: php-82
