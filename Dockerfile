@@ -6,6 +6,9 @@ ARG LIBMAXMINDDB_VERSION=1.14.1
 # renovate: datasource=github-tags depName=xdebug/xdebug
 ARG XDEBUG_VERSION=3.5.3
 
+# renovate: datasource=docker depName=anchore/syft
+FROM anchore/syft:v1.54.0@sha256:0356562f495d432056237fbea5cbc2d4839c9c75cd500784a66de2e7cc95ca7c AS sbom-generator
+
 FROM bitnami/minideb:trixie AS libmaxminddb_build
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -213,17 +216,31 @@ COPY --from=php_build /opt/bitnami /opt/bitnami
 COPY --from=php_build /usr/local/lib/libhashkit*.so* /usr/local/lib/
 COPY --from=php_build /usr/local/lib/libmemcached*.so* /usr/local/lib/
 
+RUN chmod 644 /opt/bitnami/php/licenses/* && \
+    find / -xdev -type f -perm /6000 -exec chmod a-s {} +
+
 # Check the installed extension against the final image's runtime libraries.
 RUN /opt/bitnami/php/bin/php -n -d extension=/opt/bitnami/php/lib/php/extensions/memcached.so --ri memcached
 
 ARG BUILD_VERSION
 ARG TARGETARCH
+ARG IMAGE_REVISION=0
 ENV APP_VERSION=$BUILD_VERSION \
+    IMAGE_REVISION=$IMAGE_REVISION \
     BITNAMI_APP_NAME=php-fpm \
     PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:$PATH" \
     OS_ARCH=$TARGETARCH \
     OS_FLAVOUR="debian-13" \
     OS_NAME="linux"
+
+# Scan installed components without including the scanner or its cache in runtime.
+RUN --mount=type=bind,from=sbom-generator,source=/syft,target=/usr/local/bin/syft --mount=type=tmpfs,target=/tmp/syft-home <<EOT /bin/bash
+    set -euo pipefail
+    export SYFT_CHECK_FOR_APP_UPDATE=false HOME=/tmp/syft-home XDG_CACHE_HOME=/tmp/syft-home/cache
+    syft scan dir:/opt/bitnami/php --source-name bitcompat-php --source-version "${BUILD_VERSION}" -o spdx-json=/opt/bitnami/php/.spdx-php.spdx
+    chmod 644 /opt/bitnami/php/.spdx-php.spdx
+    ln -s /opt/bitnami/php/.spdx-php.spdx /opt/bitnami/php/.spdx-php.json
+EOT
 
 EXPOSE 9000
 WORKDIR /app
